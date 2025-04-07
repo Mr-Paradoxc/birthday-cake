@@ -248,7 +248,7 @@
 
           function checkForBlow() {
             analyser.getByteFrequencyData(dataArray);
-            const blowThreshold = 5000; // Adjust based on microphone sensitivity
+            const blowThreshold = 1000; // Adjust based on microphone sensitivity
             if (dataArray[0] > blowThreshold) {
               // Assuming low frequencies indicate blowing
               blowOutCandles();
