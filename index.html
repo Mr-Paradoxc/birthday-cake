@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Birthday Surprise!</title>
     <style>
+      /* ... (Your CSS styles for cake and animation) ... */
+      /* Make sure to include styles from your previous code */
+
       body {
         margin: 0;
         padding: 0;
@@ -100,7 +103,7 @@
         width: 100%;
         height: 100%;
         background-color: #111;
-        display: none;
+        display: none; /* Initially hidden */
         z-index: 10;
       }
 
@@ -142,7 +145,6 @@
     <script>
       const canvas = document.getElementById("cakeCanvas");
       const ctx = canvas.getContext("2d");
-      let animationStarted = false;
 
       canvas.width = 400;
       canvas.height = 300;
@@ -153,6 +155,7 @@
       const flameColor = "#f1c40f";
 
       let candles = [
+        // Store candle data (position and blown state)
         { x: 100, y: 100, width: 10, height: 40, blown: false },
         { x: 150, y: 110, width: 10, height: 30, blown: false },
         { x: 200, y: 90, width: 10, height: 50, blown: false },
@@ -188,6 +191,7 @@
         ctx.fillRect(x, y, width, height);
 
         if (!blown) {
+          // Only draw flame if not blown out
           ctx.fillStyle = flameColor;
           ctx.beginPath();
           ctx.moveTo(x + width / 2, y - height / 3);
@@ -199,7 +203,7 @@
       }
 
       function drawCake() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
         candles.forEach((candle) => {
           drawCandle(
             candle.x,
@@ -213,17 +217,19 @@
         drawFrosting(50, 140, 300, 20, 20);
       }
 
+      // Function to handle blowing out candles
+
+      // ... (Your cake drawing and candle logic - cake.js) ...
+
+      // Example: Assume you have a function to blow out candles
       function blowOutCandles() {
         candles.forEach((candle) => {
-          candle.blown = true;
+          candle.blown = true; // Blow out all candles
         });
-        drawCake();
-        if (!animationStarted) {
-          showBirthdayAnimation();
-          animationStarted = true; // Set the flag so animation doesn't restart
-        }
+        drawCake(); // Redraw the cake without flames
       }
 
+      // Microphone access and audio processing (You'll need to implement this)
       async function getMicrophoneInput() {
         try {
           const stream = await navigator.mediaDevices.getUserMedia({
@@ -234,40 +240,62 @@
           const analyser = audioContext.createAnalyser();
           source.connect(analyser);
 
+          // Analyze audio data to detect blowing
           analyser.fftSize = 256;
           const bufferLength = analyser.frequencyBinCount;
           const dataArray = new Uint8Array(bufferLength);
 
           function checkForBlow() {
             analyser.getByteFrequencyData(dataArray);
-            const blowThreshold = 100;
-            if (dataArray[0] > blowThreshold) {
+
+            // Calculate the total energy of the signal
+            let totalEnergy = 0;
+            for (let i = 0; i < dataArray.length; i++) {
+              totalEnergy += dataArray[i] * dataArray[i];
+            }
+
+            // Define energy threshold - you'll need to experiment with this value
+            const energyThreshold = 5000; // Adjust based on your microphone and environment
+
+            // Detect a sudden increase in energy
+            if (totalEnergy > energyThreshold) {
               blowOutCandles();
             }
+
             requestAnimationFrame(checkForBlow);
           }
+
           checkForBlow();
         } catch (error) {
           console.error("Error accessing microphone:", error);
         }
       }
 
+      // Initialize cake drawing and microphone input
       drawCake();
       getMicrophoneInput();
 
       function showBirthdayAnimation() {
+        // 1. Hide the cake canvas
         document.getElementById("cakeCanvas").style.display = "none";
+
+        // 2. Show the animation container
         document.getElementById("animationContainer").style.display = "block";
+
+        // 3. Start the birthday animation
         initBirthdayAnimation();
       }
 
+      // ... (Your Birthday Animation code - same as before) ...
+      // Birthday animation code
       function initBirthdayAnimation() {
         const c = document.getElementById("birthdayCanvas");
         var w = (c.width = window.innerWidth),
           h = (c.height = window.innerHeight),
           ctx = c.getContext("2d"),
-          hw = w / 2,
+          hw = w / 2, // half-width
           hh = h / 2,
+          // Customize the name here
           birthdayPerson = "SARAH",
           opts = {
             strings: ["HAPPY", "BIRTHDAY!", birthdayPerson],
@@ -310,19 +338,20 @@
             balloonBaseRadian: -(Math.PI / 2 - 0.5),
             balloonAddedRadian: -1,
 
-            nameFireworkSpawnTime: 500,
-            nameFireworkBaseReachTime: 70,
+            // Name animation options - different from regular text
+            nameFireworkSpawnTime: 500, // Slower spawn time for name
+            nameFireworkBaseReachTime: 70, // Longer reach time
             nameFireworkAddedReachTime: 70,
-            nameFireworkCircleBaseSize: 25,
+            nameFireworkCircleBaseSize: 25, // Bigger circles
             nameFireworkCircleAddedSize: 15,
-            nameFireworkBaseShards: 7,
+            nameFireworkBaseShards: 7, // More shards
             nameFireworkAddedShards: 7,
-            nameFireworkShardBaseVel: 3,
+            nameFireworkShardBaseVel: 3, // Faster shards
             nameFireworkShardAddedVel: 3,
-            nameLetterContemplatingWaitTime: 900,
-            nameBalloonBaseSize: 30,
+            nameLetterContemplatingWaitTime: 900, // Longer display time
+            nameBalloonBaseSize: 30, // Bigger balloons
             nameBalloonAddedSize: 30,
-            nameBalloonBaseVel: 0.15,
+            nameBalloonBaseVel: 0.15, // Slower balloon movement
             nameBalloonAddedVel: 0.15,
           },
           calc = {
@@ -351,11 +380,12 @@
 
           this.fireworkDy = this.y - hh;
 
+          // Different color scheme for name (gold/yellow hues)
           var hue;
           if (this.isName) {
-            hue = 40 + (x / calc.totalWidth) * 20;
+            hue = 40 + (x / calc.totalWidth) * 20; // Golden hues from 40-60
           } else {
-            hue = (x / calc.totalWidth) * 360;
+            hue = (x / calc.totalWidth) * 360; // Regular rainbow
           }
 
           this.color = "hsl(hue,80%,50%)".replace("hue", hue);
@@ -370,6 +400,7 @@
           this.tick = 0;
           this.spawned = false;
 
+          // Use different timing for name vs regular text
           if (this.isName) {
             this.spawningTime =
               (opts.nameFireworkSpawnTime * Math.random()) | 0;
@@ -431,6 +462,7 @@
               if (this.tick >= this.reachTime) {
                 this.phase = "contemplate";
 
+                // Different firework explosion for name
                 if (this.isName) {
                   this.circleFinalSize =
                     opts.nameFireworkCircleBaseSize +
@@ -457,6 +489,7 @@
 
                 this.shards = [];
 
+                // Different shard count for name vs regular text
                 var shardCount;
                 if (this.isName) {
                   shardCount =
@@ -481,6 +514,7 @@
                   x = x * cos - y * sin;
                   y = y * cos + x1 * sin;
 
+                  // Use name's faster velocity for shards
                   if (this.isName) {
                     this.shards.push(
                       new Shard(this.x, this.y, x, y, this.alphaColor, true)
@@ -515,6 +549,7 @@
                 this.circleFading = true;
               }
             } else if (this.circleFading) {
+              // Name text is bold
               if (this.isName) {
                 ctx.font = "bold " + opts.charSize + "px Verdana";
               } else {
@@ -537,6 +572,7 @@
 
               if (this.tick2 >= this.circleFadeTime) this.circleFading = false;
             } else {
+              // Name text is bold
               if (this.isName) {
                 ctx.font = "bold " + opts.charSize + "px Verdana";
               } else {
@@ -556,6 +592,7 @@
               }
             }
 
+            // Different wait time for name
             var waitTime = this.isName
               ? opts.nameLetterContemplatingWaitTime
               : opts.letterContemplatingWaitTime;
@@ -572,6 +609,7 @@
                   opts.balloonAddedInflateTime * Math.random()) |
                 0;
 
+              // Different balloon size for name
               if (this.isName) {
                 this.size =
                   (opts.nameBalloonBaseSize +
@@ -602,6 +640,7 @@
             if (this.spawning) {
               ++this.tick;
 
+              // Name text is bold
               if (this.isName) {
                 ctx.font = "bold " + opts.charSize + "px Verdana";
               } else {
@@ -633,6 +672,7 @@
               ctx.lineTo(x, this.y);
               ctx.stroke();
 
+              // Name text is bold
               if (this.isName) {
                 ctx.font = "bold " + opts.charSize + "px Verdana";
               } else {
@@ -664,6 +704,7 @@
               ctx.lineTo(this.cx, this.cy + this.size);
               ctx.stroke();
 
+              // Name text is bold
               if (this.isName) {
                 ctx.font = "bold " + opts.charSize + "px Verdana";
               } else {
@@ -683,6 +724,7 @@
           }
         };
         function Shard(x, y, vx, vy, color, isNameShard) {
+          // Different velocity for name shards
           if (isNameShard) {
             var vel =
               opts.nameFireworkShardBaseVel +
@@ -775,9 +817,11 @@
           if (done) for (var l = 0; l < letters.length; ++l) letters[l].reset();
         }
 
+        // Create the letters for each string
         for (var i = 0; i < opts.strings.length; ++i) {
           for (var j = 0; j < opts.strings[i].length; ++j) {
-            var isName = i === 2;
+            // Flag the name letters as special
+            var isName = i === 2; // Third string is the name
 
             letters.push(
               new Letter(
