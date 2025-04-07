@@ -240,7 +240,7 @@
 
           function checkForBlow() {
             analyser.getByteFrequencyData(dataArray);
-            const blowThreshold = 10000;
+            const blowThreshold = 6000;
             if (dataArray[0] > blowThreshold) {
               blowOutCandles();
             }
