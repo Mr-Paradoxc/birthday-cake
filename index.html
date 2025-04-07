@@ -245,24 +245,15 @@
           const bufferLength = analyser.frequencyBinCount;
           const dataArray = new Uint8Array(bufferLength);
 
+
           function checkForBlow() {
             analyser.getByteFrequencyData(dataArray);
-
-            // Calculate the total energy of the signal
-            let totalEnergy = 0;
-            for (let i = 0; i < dataArray.length; i++) {
-              totalEnergy += dataArray[i] * dataArray[i];
-            }
-
-            // Define energy threshold - you'll need to experiment with this value
-            const energyThreshold = 1000; // Adjust based on your microphone and environment
-
-            // Detect a sudden increase in energy
-            if (totalEnergy > energyThreshold) {
+            const blowThreshold = 5000; // Adjust based on microphone sensitivity
+            if (dataArray[0] > blowThreshold) {
+              // Assuming low frequencies indicate blowing
               blowOutCandles();
             }
-
-            requestAnimationFrame(checkForBlow);
+            requestAnimationFrame(checkForBlow); // Continuously check for blowing
           }
 
           checkForBlow();
